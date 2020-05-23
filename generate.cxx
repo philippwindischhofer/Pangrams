@@ -67,8 +67,18 @@ void print_letter_counts(LetterCounts letter_counts) {
     }
 }
 
-int main(void) {
+int main(int argc, char* argv[]) {
 
+    if(argc < 2) {
+	std::cerr << "Usage: " << argv[0] << " PREFIX" << std::endl;
+	return 1;
+    }
+    
+    // ------------------------------
+    // initial part of this pangram
+    // ------------------------------
+    std::string sentence_prefix = argv[1];
+    
     // ------------------------------
     // database with number words
     // ------------------------------
@@ -88,27 +98,13 @@ int main(void) {
     // ranges for the exploration of certain characters
     // ------------------------------
     std::map<char, unsigned int> input_start_frequencies = {
-	{'e', 28}, {'f', 7}, {'g', 2}, {'h', 4}, {'i', 10}, {'l', 2}, {'n', 21}, {'o', 14}, {'r', 6},
-	{'s', 25}, {'t', 18}, {'u', 3}, {'v', 4}, {'w', 8}, {'x', 1}, {'y', 3}
+    	{'e', 25}, {'f', 4}, {'g', 2}, {'h', 3}, {'i', 8}, {'l', 1}, {'n', 17}, {'o', 12}, {'r', 3},
+    	{'s', 24}, {'t', 18}, {'u', 1}, {'v', 3}, {'w', 7}, {'x', 1}, {'y', 3}
     };
     std::map<char, unsigned int> input_end_frequencies = {
-	{'e', 30}, {'f', 9}, {'g', 4}, {'h', 6}, {'i', 12}, {'l', 4}, {'n', 23}, {'o', 16}, {'r', 8},
-	{'s', 27}, {'t', 20}, {'u', 5}, {'v', 6}, {'w', 10}, {'x', 3}, {'y', 5}
+    	{'e', 32}, {'f', 9}, {'g', 7}, {'h', 8}, {'i', 14}, {'l', 4}, {'n', 23}, {'o', 17}, {'r', 8},
+    	{'s', 30}, {'t', 24}, {'u', 6}, {'v', 8}, {'w', 13}, {'x', 6}, {'y', 5}
     };
-
-    // std::map<char, unsigned int> input_start_frequencies = {
-    // 	{'e', 25}, {'f', 4}, {'g', 2}, {'h', 3}, {'i', 8}, {'l', 1}, {'n', 17}, {'o', 12}, {'r', 3},
-    // 	{'s', 24}, {'t', 18}, {'u', 1}, {'v', 3}, {'w', 7}, {'x', 1}, {'y', 3}
-    // };
-    // std::map<char, unsigned int> input_end_frequencies = {
-    // 	{'e', 32}, {'f', 9}, {'g', 7}, {'h', 8}, {'i', 14}, {'l', 4}, {'n', 23}, {'o', 17}, {'r', 8},
-    // 	{'s', 30}, {'t', 24}, {'u', 6}, {'v', 8}, {'w', 13}, {'x', 6}, {'y', 5}
-    // };
-
-    // ------------------------------
-    // initial part of this pangram
-    // ------------------------------
-    std::string sentence_prefix = "this pangram lists and";
 
     // ------------------------------
     // build database of letter counts
