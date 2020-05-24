@@ -46,9 +46,6 @@ inline int get_letter_count(char letter, LetterCounts& letter_counts) {
 
 void sum_letter_counts(std::vector<LetterCounts>& summands, LetterCounts& sum) {
     
-    // reset the counters
-    std::fill(sum.begin(), sum.end(), 0);
-
     // perform the sums
     for(unsigned int ind = 0; ind < sum.size(); ind++) {
 	
@@ -56,7 +53,7 @@ void sum_letter_counts(std::vector<LetterCounts>& summands, LetterCounts& sum) {
 	for(LetterCounts& cur_summand: summands) {
 	    cur_sum += cur_summand[ind];
 	}
-	sum[ind] = cur_sum;
+	sum[ind] += cur_sum;
     }
 }
 
@@ -95,17 +92,25 @@ int main(int argc, char* argv[]) {
     };
 
     // ------------------------------
-    // ranges for the exploration of certain characters
+    // settings for the exploration of logological space
     // ------------------------------
+    std::vector<char> all_characters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+
+    // start- and end frequencies of characters that need to be explicitly iterated over
+    std::vector<char> iterated_letters = {'e', 'f', 'h', 'i', 'n', 'o', 'r', 's', 't', 'u', 'v', 'w'};
+    
     std::map<char, unsigned int> input_start_frequencies = {
-    	{'e', 25}, {'f', 4}, {'g', 2}, {'h', 3}, {'i', 8}, {'l', 1}, {'n', 17}, {'o', 12}, {'r', 3},
-    	{'s', 24}, {'t', 18}, {'u', 1}, {'v', 3}, {'w', 7}, {'x', 1}, {'y', 3}
+    	{'e', 25}, {'f', 4}, {'h', 3}, {'i', 8}, {'n', 17}, {'o', 12}, {'r', 3},
+    	{'s', 24}, {'t', 18}, {'u', 1}, {'v', 3}, {'w', 7}
     };
     std::map<char, unsigned int> input_end_frequencies = {
-    	{'e', 32}, {'f', 9}, {'g', 7}, {'h', 8}, {'i', 14}, {'l', 4}, {'n', 23}, {'o', 17}, {'r', 8},
-    	{'s', 30}, {'t', 24}, {'u', 6}, {'v', 8}, {'w', 13}, {'x', 6}, {'y', 5}
+    	{'e', 32}, {'f', 9}, {'h', 8}, {'i', 14}, {'n', 23}, {'o', 17}, {'r', 8},
+    	{'s', 30}, {'t', 24}, {'u', 6}, {'v', 8}, {'w', 13}
     };
-
+    
+    // characters whose counts can be inferred directly from the rest of the assignment and which consequently con't need to be iterated over
+    std::vector<char> direct_inferral_letters = {'g', 'l', 'x', 'y'};
+    
     // ------------------------------
     // build database of letter counts
     // ------------------------------
@@ -182,18 +187,47 @@ int main(int argc, char* argv[]) {
     unsigned long long cnt = 0;
     do {
 
-	// compute the character counts implied by this assignment
-	std::vector<LetterCounts> cur_letter_counts = {sentence_prefix_letter_counts};
-	for(unsigned int cur_count: cur_frequencies) {
-	    cur_letter_counts.push_back(number_word_letter_counts[cur_count]);
+	// reset the counters
+	std::fill(obtained_frequencies.begin(), obtained_frequencies.end(), 0);
+	
+	// first, get the letter counts for all letters that iterated over
+	std::vector<LetterCounts> to_be_counted = {sentence_prefix_letter_counts};
+	
+	for(char& cur_letter: iterated_letters) {
+	    unsigned int cur_count = get_letter_count(cur_letter, cur_frequencies);
+	    if(cur_count > 0) {
+		to_be_counted.push_back(number_word_letter_counts[cur_count]);
+	    }
 	}
-	sum_letter_counts(cur_letter_counts, obtained_frequencies);
+	for(char& cur_letter: direct_characters) {
+	    unsigned int cur_count = get_letter_count(cur_letter, cur_frequencies);
+	    if(cur_count > 0) {
+		to_be_counted.push_back(number_word_letter_counts[cur_count]);
+	    }
+	}
+	sum_letter_counts(to_be_counted, obtained_frequencies);
 
+	// then, set the frequencies for the direct inferral letters
+	// and add their contribution to the total letter count
+	to_be_counted.clear();
+	for(char& cur_letter: direct_inferral_letters) {
+	    unsigned int cur_count = get_letter_count(cur_letter, obtained_frequencies) + 1;
+	    
+	    set_letter_count(cur_letter, cur_count, cur_frequencies);
+	    set_letter_count(cur_letter, cur_count, start_frequencies);
+	    set_letter_count(cur_letter, cur_count, end_frequencies);	   
+
+	    if(cur_count > 0) {
+		to_be_counted.push_back(number_word_letter_counts[cur_count]);
+	    }
+	}
+	sum_letter_counts(to_be_counted, obtained_frequencies);
+	
 	// the letters themselves are also part of the enumeration
 	for(auto& cur_count: obtained_frequencies) {
 	    cur_count += 1;
 	}
-
+	
 	if(obtained_frequencies == cur_frequencies) {
 	    // have found a fixed point!
 	    successful = true;
@@ -212,9 +246,6 @@ int main(int argc, char* argv[]) {
     // ------------------------------
     if(successful) {
 	std::string pangram = sentence_prefix;
-
-	// read them in alphabetical order
-	std::vector<char> all_characters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
 	
 	// do the composing
 	for(auto& cur_character: all_characters) {
