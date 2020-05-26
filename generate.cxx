@@ -100,12 +100,12 @@ int main(int argc, char* argv[]) {
     std::vector<char> iterated_letters = {'e', 'f', 'h', 'i', 'n', 'o', 'r', 's', 't', 'u', 'v', 'w'};
     
     std::map<char, unsigned int> input_start_frequencies = {
-    	{'e', 25}, {'f', 4}, {'h', 3}, {'i', 8}, {'n', 17}, {'o', 12}, {'r', 3},
-    	{'s', 24}, {'t', 18}, {'u', 1}, {'v', 3}, {'w', 7}
+    	{'e', 23}, {'f', 4}, {'h', 3}, {'i', 8}, {'n', 17}, {'o', 12}, {'r', 3},
+    	{'s', 24}, {'t', 18}, {'u', 1}, {'v', 3}, {'w', 5}
     };
     std::map<char, unsigned int> input_end_frequencies = {
-    	{'e', 32}, {'f', 9}, {'h', 8}, {'i', 14}, {'n', 23}, {'o', 17}, {'r', 8},
-    	{'s', 30}, {'t', 24}, {'u', 6}, {'v', 8}, {'w', 13}
+    	{'e', 34}, {'f', 9}, {'h', 8}, {'i', 14}, {'n', 23}, {'o', 18}, {'r', 11},
+    	{'s', 32}, {'t', 24}, {'u', 6}, {'v', 8}, {'w', 13}
     };
     
     // characters whose counts can be inferred directly from the rest of the assignment and which consequently con't need to be iterated over
@@ -264,7 +264,7 @@ int main(int argc, char* argv[]) {
 	std::cout << pangram << std::endl;
     }
     else {
-	std::cout << "NO PANGRAM FOUND!" << std::endl;
+	std::cout << "NO PANGRAM FOUND for input '" << sentence_prefix << "'" << std::endl;
     }
 
     return 0;
